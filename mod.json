@@ -1,0 +1,54 @@
+{
+  "id": "com.at747.missilecamera",
+  "guid": "b2c3d4e5f6a74890b1c2d3e4f5a67890",
+  "version": "0.26.0",
+  "name": "Missile Camera",
+  "assembly": "NOLoader.MissileCamera.dll",
+  "entryType": "NOLoader.MissileCamera.MissileCameraMod",
+  "loadStage": "Mission",
+  "dependencies": [],
+  "patches": [
+    {
+      "target": "TargetScreenUI::SetupCamera",
+      "inject": "NOLoader.MissileCamera.Patches::SetupCameraPostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "1182AE4344C89C4C"
+    },
+    {
+      "target": "TargetCam::SetLandingCam",
+      "inject": "NOLoader.MissileCamera.Patches::SetLandingCamPostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "DC2A29FE473649A1"
+    },
+    {
+      "target": "TargetCam::CancelTarget",
+      "inject": "NOLoader.MissileCamera.Patches::CancelTargetPostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "4E7300B69EBEE12A"
+    },
+    {
+      "target": "TargetCam::OnDestroy",
+      "inject": "NOLoader.MissileCamera.Patches::OnDestroyPostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "1129FA4392341DE5"
+    },
+    {
+      "target": "TacScreen::Initialize",
+      "inject": "NOLoader.MissileCamera.Patches::TacScreenInitializePostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "23EFB6029C1D360B"
+    },
+    {
+      "target": "TacScreen::TacScreen_OnCamToggle",
+      "inject": "NOLoader.MissileCamera.Patches::TacScreenOnCamTogglePostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "C9BEAB4B4E1FCCA3"
+    },
+    {
+      "target": "WeaponManager::TargetListChanged",
+      "inject": "NOLoader.MissileCamera.Patches::TargetListChangedPostfix",
+      "method": "Postfix",
+      "expectedSignatureHash": "FB50B2B9393A2860"
+    }
+  ]
+}
