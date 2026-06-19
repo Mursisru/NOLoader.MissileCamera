@@ -6,7 +6,7 @@ namespace NOLoader.MissileCamera
 {
     public sealed class MissileCameraMod : INOMod
     {
-        private const string ModVersion = "0.26.0";
+        private const string ModVersion = "0.27.0";
 
         private const string DefaultIni = @"[Layout]
 Enabled=1
@@ -50,6 +50,14 @@ MissileNameColor=1,0,1,1
 TargetNameColor=0.4,0.9,1,1
 LabelBackgroundColor=0.18,0.18,0.18,0.62
 LabelBackgroundAlpha=0.62
+
+[MissileCameraControls]
+Enabled=1
+ZoomStep=0.5
+ZoomMin=-4
+ZoomMax=4
+ZoomFovDegreesPerUnit=5
+IndicatorSeconds=0.5
 ";
 
         public void OnLoad(ref NOModContext ctx)
@@ -58,6 +66,7 @@ LabelBackgroundAlpha=0.62
             MfdLayoutConfig.Init(ctx.ModRoot);
             MissileCameraFeedConfig.Refresh(force: true);
             MissileCameraHudConfig.Refresh(force: true);
+            MissileCameraControlsConfig.Refresh(force: true);
             MissileCameraFeedDriverHost.Ensure();
             MfdPatchProbe.Run(ctx.GameRoot);
             MfdLog.Info("loaded v" + ModVersion);

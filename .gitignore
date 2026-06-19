@@ -3,3 +3,4 @@ obj/
 .vs/
 .debug/
 *.user
+Directory.Build.props

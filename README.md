@@ -2,13 +2,13 @@
 
 [![Nuclear Option](https://img.shields.io/badge/Game-Nuclear%20Option-blue)](https://store.steampowered.com/app/2168680/Nuclear_Option/)
 [![NOLoader](https://img.shields.io/badge/Loader-NOLoader-purple)](https://github.com/Mursisru/NOLoader)
-[![Version](https://img.shields.io/badge/Version-0.26.0-green)]()
+[![Version](https://img.shields.io/badge/Version-0.27.0-green)]()
 
 NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye view (Missile Nose Cam) and a tactical HUD overlay directly onto your cockpit MFD Target display.
 
 **Mod id:** `com.at747.missilecamera`
 
-**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay and `mod_config.ini` format; Cecil IL patches instead of Harmony. Use **one** loader — do not install both builds.
+**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay; NOLoader uses `mod_config.ini`, BepInEx uses **Configuration Manager**. Cecil IL patches instead of Harmony. Use **one** loader — do not install both builds.
 
 ---
 
@@ -17,6 +17,7 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 * **MFD split-screen UI:** Splits the wide tactical MFD (Target view) into zones and embeds the missile feed in the weapons panel area.
 * **Seeker cam (missile nose cam):** Renders a live `RawImage` feed from your latest **player-owned** in-flight missile while it guides toward the target.
 * **Tactical HUD overlay:** Telemetry (`SPD`, `ALT`, `RNG`), horizon reticle, salvo info, and target markers drawn on the live feed.
+* **Manual feed controls:** Cycle in-flight owned missiles and adjust camera zoom while the MFD overlay is active (see **Controls** below).
 * **Per-aircraft layout (`DisplayMode=auto`):**
   * **Dedicated split** (e.g. KR-67): wide target cam on the left, missile panel on the right.
   * **Small tac overlay** (e.g. Cricket): mod **skipped** — vanilla tactical MFD unchanged.
@@ -103,6 +104,24 @@ When updating from the BepInEx `MissileCamera` repo (`source\repos\MissileCamera
 
 ---
 
+## Controls & keybinds
+
+Active only while the missile feed overlay is on and you have **player-owned** in-flight missiles. **US English keyboard layout** (Right Alt may act as AltGr on some EU keyboards). Keybinds are **fixed in code** (not in `mod_config.ini`).
+
+| Keybind | Unity `KeyCode` | Action |
+| :--- | :--- | :--- |
+| **Right Alt** + `/` | `RightAlt` + `Slash` | Next missile (newer; wraps 6/6 → 1/6) |
+| **Right Alt** + `,` | `RightAlt` + `Comma` | Previous missile (older; wraps 1/6 → 6/6) |
+| **Right Alt** + `;` | `RightAlt` + `Semicolon` | Zoom in (narrower FOV) |
+| **Right Alt** + `.` | `RightAlt` + `Period` | Zoom out (wider FOV) |
+| **Right Shift** + `.` | `RightShift` + `Period` | Reset zoom offset to `0.0` |
+
+**Sticky selection:** after Next/Prev the camera stays on your chosen missile when new ones launch. If it is destroyed, the feed falls back to the newest remaining missile.
+
+**Zoom HUD:** each zoom change shows the current **offset** (e.g. `2.0`, `-0.5`) for **0.5 s** above feed center (`0.0` = default FOV from `[MissileCameraFeed]` `Fov`). Zoom limits/step: `[MissileCameraControls]` in `mod_config.ini`.
+
+---
+
 ## Configuration (`mod_config.ini`)
 
 Edit `NOLoader\mods\MissileCamera\mod_config.ini` (same format as the BepInEx `MissileCamera` plugin).
@@ -158,6 +177,17 @@ Edit `NOLoader\mods\MissileCamera\mod_config.ini` (same format as the BepInEx `M
 | `TargetNameColor` | `0.4,0.9,1,1` | Target name label |
 | `LabelBackgroundColor` | `0.18,0.18,0.18,0.62` | Label backdrop |
 | `LabelBackgroundAlpha` | `0.62` | Backdrop alpha |
+
+### `[MissileCameraControls]`
+
+| Key | Default | Description |
+| :--- | :---: | :--- |
+| `Enabled` | `1` | Keyboard missile cycling and zoom (keybinds are fixed; see **Controls & keybinds**) |
+| `ZoomStep` | `0.5` | Offset change per zoom key press |
+| `ZoomMin` | `-4` | Minimum zoom offset |
+| `ZoomMax` | `4` | Maximum zoom offset |
+| `ZoomFovDegreesPerUnit` | `5` | FOV delta (degrees) per offset unit |
+| `IndicatorSeconds` | `0.5` | Zoom HUD readout duration (seconds) |
 
 ---
 

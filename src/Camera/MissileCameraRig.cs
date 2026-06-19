@@ -21,6 +21,7 @@ namespace NOLoader.MissileCamera
         private float _filteredLateralG;
         private float _filteredTurnSign;
         private float _sampledLateralG;
+        private float _zoomOffset;
 
         internal MissileCameraRig()
         {
@@ -53,6 +54,12 @@ namespace NOLoader.MissileCamera
         internal Camera FeedCamera => _camera;
         internal float BoreRollDeg => _boreRollDeg;
         internal HorizonFrame LastHorizonFrame { get; private set; } = HorizonFrame.Empty;
+
+        internal void SetZoomOffset(float offset)
+        {
+            _zoomOffset = offset;
+            ApplyEffectiveFov();
+        }
 
         internal void Attach(Missile missile)
         {
@@ -216,11 +223,21 @@ namespace NOLoader.MissileCamera
             int h = MissileCameraFeedConfig.FeedHeight;
             if (_renderTexture != null && _textureWidth == w && _textureHeight == h)
             {
-                _camera.fieldOfView = MissileCameraFeedConfig.Fov;
+                ApplyEffectiveFov();
                 return;
             }
 
             ApplyConfig();
+        }
+
+        private void ApplyEffectiveFov()
+        {
+            if (!IsRootAlive)
+                return;
+
+            _camera.fieldOfView = MissileCameraControlsConfig.ComputeEffectiveFov(
+                MissileCameraFeedConfig.Fov,
+                _zoomOffset);
         }
 
         private void ApplyConfig()
@@ -230,7 +247,7 @@ namespace NOLoader.MissileCamera
 
             _textureWidth = MissileCameraFeedConfig.FeedWidth;
             _textureHeight = MissileCameraFeedConfig.FeedHeight;
-            _camera.fieldOfView = MissileCameraFeedConfig.Fov;
+            ApplyEffectiveFov();
             _camera.nearClipPlane = 0.15f;
 
             ReleaseTexture();
