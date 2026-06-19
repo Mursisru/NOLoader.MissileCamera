@@ -1,0 +1,18 @@
+NOLoader.MissileCamera v0.26.1 — NOLoader mod for Nuclear Option
+
+Requires NOLoader: https://github.com/Mursisru/NOLoader
+
+Install:
+1. Install NOLoader into Nuclear Option (NOLoader\core\, winhttp.dll proxy).
+2. Extract into: Nuclear Option\NOLoader\mods\MissileCamera\
+   - NOLoader.MissileCamera.dll
+   - NOLoader.ModConfig.dll
+   - mod.json
+   - mod_config.ini
+3. Run PatchTool once (or use deploy script) so Cecil patches apply.
+
+Mod id: com.at747.missilecamera
+Upstream (BepInEx): https://github.com/Mursisru/MissileCamera
+
+Changes in v0.26.1:
+- Fix camera ending up inside the missile body on some missile types.
