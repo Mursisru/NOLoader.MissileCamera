@@ -87,6 +87,7 @@ namespace NOLoader.MissileCamera
 
                 ApplyFonts(rows, screenUi, panel, header, body, telemetry);
                 ApplyContent(rows, snapshot, nameTextWidth, forceCanvasUpdate: false);
+                Canvas.ForceUpdateCanvases();
 
                 float salvoBlockW = ComputeSalvoBlockWidth(panel, rows.Salvo);
                 float salvoTextW = Mathf.Max(salvoBlockW - MissileCameraPanelMetrics.RowEdgePad * 2f, 8f);
@@ -192,11 +193,11 @@ namespace NOLoader.MissileCamera
             bool forceCanvasUpdate)
         {
             rows.MissileName.text = snapshot.MissileName;
-            rows.Salvo.text = $"{snapshot.SalvoIndex}/{snapshot.SalvoTotal}";
+            rows.Salvo.text = snapshot.SalvoText;
             rows.Target.text = snapshot.TargetName;
-            rows.Speed.text = MissileCameraTelemetry.FormatLabeledRow("S", snapshot.SpeedText);
-            rows.Altitude.text = MissileCameraTelemetry.FormatLabeledRow("A", snapshot.AltitudeText);
-            rows.Range.text = MissileCameraTelemetry.FormatLabeledRow("R", snapshot.RangeText);
+            rows.Speed.text = snapshot.SpeedRow;
+            rows.Altitude.text = snapshot.AltitudeRow;
+            rows.Range.text = snapshot.RangeRow;
 
             if (forceCanvasUpdate)
                 Canvas.ForceUpdateCanvases();
@@ -215,8 +216,6 @@ namespace NOLoader.MissileCamera
             float telemetryRowHeight,
             float maxTelemetryRowHeight)
         {
-            Canvas.ForceUpdateCanvases();
-
             if (MeasureWidth(rows.MissileName) > nameTextWidth + 0.5f)
                 return false;
 

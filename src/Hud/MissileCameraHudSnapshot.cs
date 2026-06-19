@@ -13,6 +13,10 @@ namespace NOLoader.MissileCamera
         internal readonly string SpeedText;
         internal readonly string AltitudeText;
         internal readonly string RangeText;
+        internal readonly string SalvoText;
+        internal readonly string SpeedRow;
+        internal readonly string AltitudeRow;
+        internal readonly string RangeRow;
         internal readonly int SalvoIndex;
         internal readonly int SalvoTotal;
         internal readonly GlobalPosition AimPoint;
@@ -29,6 +33,10 @@ namespace NOLoader.MissileCamera
             string speedText,
             string altitudeText,
             string rangeText,
+            string salvoText,
+            string speedRow,
+            string altitudeRow,
+            string rangeRow,
             int salvoIndex,
             int salvoTotal,
             GlobalPosition aimPoint,
@@ -44,6 +52,10 @@ namespace NOLoader.MissileCamera
             SpeedText = speedText;
             AltitudeText = altitudeText;
             RangeText = rangeText;
+            SalvoText = salvoText;
+            SpeedRow = speedRow;
+            AltitudeRow = altitudeRow;
+            RangeRow = rangeRow;
             SalvoIndex = salvoIndex;
             SalvoTotal = salvoTotal;
             AimPoint = aimPoint;
@@ -61,6 +73,10 @@ namespace NOLoader.MissileCamera
             speedText: "---",
             altitudeText: "---",
             rangeText: "---",
+            salvoText: "1/1",
+            speedRow: "S:---",
+            altitudeRow: "A:---",
+            rangeRow: "R:---",
             salvoIndex: 1,
             salvoTotal: 1,
             aimPoint: default,
@@ -86,15 +102,23 @@ namespace NOLoader.MissileCamera
             float pitchDeg = rig != null ? -HorizonFrame.ComputeCameraPitchDeg(rig.FeedCamera) : 0f;
             float rollDeg = -boreRollDeg;
 
+            string speedText = MissileCameraTelemetry.FormatSpeed(missile);
+            string altitudeText = MissileCameraTelemetry.FormatAltitude(missile);
+            string rangeText = MissileCameraTelemetry.FormatRange(missile);
+
             return new MissileCameraHudSnapshot(
                 hasFeed: rig?.Texture != null,
                 hasTarget: hasTarget,
                 hasAimPoint: hasAimPoint,
                 missileName: MissileAccess.GetMissileName(missile),
                 targetName: MissileAccess.GetTargetName(missile),
-                speedText: MissileCameraTelemetry.FormatSpeed(missile),
-                altitudeText: MissileCameraTelemetry.FormatAltitude(missile),
-                rangeText: MissileCameraTelemetry.FormatRange(missile),
+                speedText: speedText,
+                altitudeText: altitudeText,
+                rangeText: rangeText,
+                salvoText: $"{salvoIndex}/{salvoTotal}",
+                speedRow: MissileCameraTelemetry.FormatLabeledRow("S", speedText),
+                altitudeRow: MissileCameraTelemetry.FormatLabeledRow("A", altitudeText),
+                rangeRow: MissileCameraTelemetry.FormatLabeledRow("R", rangeText),
                 salvoIndex: salvoIndex,
                 salvoTotal: salvoTotal,
                 aimPoint: aimPoint,

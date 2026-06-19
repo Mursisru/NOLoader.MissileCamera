@@ -23,6 +23,7 @@ namespace NOLoader.MissileCamera
         private static float _nextReconcileTimeUnscaled;
         private static bool _loggedBind;
         private static RectTransform? _cachedLayoutRoot;
+        private static RectTransform? _cachedProjectionRect;
         private static float _cachedLayoutRotationZ = float.NaN;
         private static float _cachedPanelW = -1f;
         private static float _cachedPanelH = -1f;
@@ -125,6 +126,7 @@ namespace NOLoader.MissileCamera
             _layoutRoot = null;
             _panelRt = null;
             _cachedLayoutRoot = null;
+            _cachedProjectionRect = null;
             _cachedLayoutRotationZ = float.NaN;
             _cachedPanelW = -1f;
             _cachedPanelH = -1f;
@@ -144,8 +146,9 @@ namespace NOLoader.MissileCamera
             _feedImage = feed;
             _layoutRoot = layoutRt;
             _panelRt = panelRt;
-            _cachedLayoutRoot = null;
-            _cachedLayoutRotationZ = float.NaN;
+            _cachedLayoutRoot = layoutRt;
+            _cachedProjectionRect = viewRt;
+            _cachedLayoutRotationZ = contentRotationZ;
             _cachedPanelW = -1f;
             _cachedPanelH = -1f;
             _telemetryText = FindChildText(panelRt, "MissileTelemetry");
@@ -225,12 +228,9 @@ namespace NOLoader.MissileCamera
                 _cachedLayoutRotationZ = contentRotationZ;
                 _cachedPanelW = -1f;
                 _cachedPanelH = -1f;
+                _cachedProjectionRect = MissileCameraFeedLayout.ResolveProjectionRect(_layoutRoot);
                 HudOverlay.InvalidateCornerLayout();
-                return;
             }
-
-            MissileCameraFeedLayout.ApplyContentRotation(_layoutRoot, contentRotationZ);
-            _cachedLayoutRotationZ = contentRotationZ;
         }
 
         private static void UpdateDisplay(Missile? missile)
@@ -259,7 +259,9 @@ namespace NOLoader.MissileCamera
                     }
 
                     SyncFeedLayout();
-                    RectTransform viewRt = MissileCameraFeedLayout.ResolveProjectionRect(_layoutRoot);
+                    RectTransform viewRt = _cachedProjectionRect != null
+                        ? _cachedProjectionRect
+                        : MissileCameraFeedLayout.ResolveProjectionRect(_layoutRoot!);
 
                     MissileCameraHudSnapshot snapshot = ResolveHudSnapshot(missile);
                     Camera? feedCamera = _rig?.FeedCamera;

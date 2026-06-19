@@ -20,6 +20,7 @@ namespace NOLoader.MissileCamera
         private int _lastRollAdvanceFrame = -1;
         private float _filteredLateralG;
         private float _filteredTurnSign;
+        private float _sampledLateralG;
 
         internal MissileCameraRig()
         {
@@ -66,6 +67,7 @@ namespace NOLoader.MissileCamera
             _rollVelocity = 0f;
             _filteredLateralG = 0f;
             _filteredTurnSign = 0f;
+            _sampledLateralG = 0f;
             _lastRollAdvanceFrame = -1;
             LastHorizonFrame = HorizonFrame.Empty;
 
@@ -93,6 +95,7 @@ namespace NOLoader.MissileCamera
             _rollVelocity = 0f;
             _filteredLateralG = 0f;
             _filteredTurnSign = 0f;
+            _sampledLateralG = 0f;
             _lastRollAdvanceFrame = -1;
             LastHorizonFrame = HorizonFrame.Empty;
             if (!IsRootAlive)
@@ -146,6 +149,7 @@ namespace NOLoader.MissileCamera
             _lastRollAdvanceFrame = Time.frameCount;
 
             MissileTurnLoad.TrySampleHorizontalTurn(_missile, out float rawLateralG, out float rawTurnSign);
+            _sampledLateralG = rawLateralG;
             float filterT = 1f - Mathf.Exp(-MissileCameraFeedConfig.TurnLookGFilterHz * deltaTime);
             _filteredLateralG = Mathf.Lerp(_filteredLateralG, rawLateralG, filterT);
 
@@ -191,7 +195,6 @@ namespace NOLoader.MissileCamera
             _root.transform.localRotation = Quaternion.identity;
 
             Transform missileTransform = _missile.transform;
-            MissileTurnLoad.TrySampleHorizontalTurn(_missile, out float lateralG, out _);
 
             Quaternion desiredWorld = HorizonFrame.BuildCameraWorldRotation(
                 missileTransform,
@@ -201,7 +204,7 @@ namespace NOLoader.MissileCamera
             Quaternion bodyWorld = missileTransform.rotation;
             _camera.transform.localRotation = Quaternion.Inverse(bodyWorld) * desiredWorld;
 
-            LastHorizonFrame = HorizonFrame.FromCamera(_camera, lateralG, _boreRollDeg);
+            LastHorizonFrame = HorizonFrame.FromCamera(_camera, _sampledLateralG, _boreRollDeg);
         }
 
         private void ApplyConfigIfNeeded()

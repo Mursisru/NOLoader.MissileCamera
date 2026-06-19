@@ -25,6 +25,8 @@ namespace NOLoader.MissileCamera
         private string _lastMissileName = string.Empty;
         private string _lastTargetName = string.Empty;
         private string _lastSalvo = string.Empty;
+        private int _lastSalvoIndex = -1;
+        private int _lastSalvoTotal = -1;
         private string _lastRange = string.Empty;
         private string _lastAltitude = string.Empty;
         private string _lastSpeed = string.Empty;
@@ -136,6 +138,8 @@ namespace NOLoader.MissileCamera
             _lastMissileName = string.Empty;
             _lastTargetName = string.Empty;
             _lastSalvo = string.Empty;
+            _lastSalvoIndex = -1;
+            _lastSalvoTotal = -1;
             _lastRange = string.Empty;
             _lastAltitude = string.Empty;
             _lastSpeed = string.Empty;
@@ -197,19 +201,19 @@ namespace NOLoader.MissileCamera
         private bool SnapshotContentChanged(MissileCameraHudSnapshot snapshot) =>
             snapshot.MissileName != _lastMissileName
             || snapshot.TargetName != _lastTargetName
-            || SalvoLabel(snapshot) != _lastSalvo
+            || snapshot.SalvoIndex != _lastSalvoIndex
+            || snapshot.SalvoTotal != _lastSalvoTotal
             || snapshot.RangeText != _lastRange
             || snapshot.AltitudeText != _lastAltitude
             || snapshot.SpeedText != _lastSpeed;
-
-        private static string SalvoLabel(MissileCameraHudSnapshot snapshot) =>
-            $"{snapshot.SalvoIndex}/{snapshot.SalvoTotal}";
 
         private void RememberSnapshotContent(MissileCameraHudSnapshot snapshot)
         {
             _lastMissileName = snapshot.MissileName;
             _lastTargetName = snapshot.TargetName;
-            _lastSalvo = SalvoLabel(snapshot);
+            _lastSalvoIndex = snapshot.SalvoIndex;
+            _lastSalvoTotal = snapshot.SalvoTotal;
+            _lastSalvo = snapshot.SalvoText;
             _lastRange = snapshot.RangeText;
             _lastAltitude = snapshot.AltitudeText;
             _lastSpeed = snapshot.SpeedText;

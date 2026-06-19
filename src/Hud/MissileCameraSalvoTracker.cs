@@ -6,6 +6,7 @@ namespace NOLoader.MissileCamera
     internal static class MissileCameraSalvoTracker
     {
         private static readonly List<Missile> CurrentBurst = new List<Missile>();
+
         private static float _lastRegisterTimeUnscaled = -999f;
 
         internal static void Reset()
@@ -48,28 +49,21 @@ namespace NOLoader.MissileCamera
             if (CurrentBurst.Count == 0)
                 return;
 
-            var ordered = new List<Missile>(CurrentBurst.Count);
+            float myAge = missile.timeSinceSpawn;
+            index = 1;
+            total = 0;
             for (int i = 0; i < CurrentBurst.Count; i++)
             {
                 Missile candidate = CurrentBurst[i];
-                if (IsTrackable(candidate))
-                    ordered.Add(candidate);
+                if (!IsTrackable(candidate))
+                    continue;
+
+                total++;
+                if (candidate != missile && candidate.timeSinceSpawn > myAge)
+                    index++;
             }
 
-            ordered.Sort((a, b) => b.timeSinceSpawn.CompareTo(a.timeSinceSpawn));
-            total = Mathf.Max(1, ordered.Count);
-
-            for (int i = 0; i < ordered.Count; i++)
-            {
-                if (ordered[i] == missile)
-                {
-                    index = i + 1;
-                    return;
-                }
-            }
-
-            index = 1;
-            total = Mathf.Max(1, ordered.Count);
+            total = Mathf.Max(1, total);
         }
 
         private static void PruneBurst()
