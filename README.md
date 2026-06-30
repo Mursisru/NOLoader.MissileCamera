@@ -4,7 +4,8 @@
 
 [![Nuclear Option](https://img.shields.io/badge/Game-Nuclear%20Option-blue)](https://store.steampowered.com/app/2168680/Nuclear_Option/)
 [![NOLoader](https://img.shields.io/badge/Loader-NOLoader-purple)](https://github.com/Mursisru/NOLoader)
-[![Version](https://img.shields.io/badge/Version-0.27.1-green)]()
+[![Version](https://img.shields.io/badge/Version-0.27.1-green)](https://github.com/Mursisru/NOLoader.MissileCamera/releases/tag/v0.27.1)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](https://github.com/Mursisru/NOLoader.MissileCamera/blob/NOLoaderVersion/LICENSE)
 
 NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye view (Missile Nose Cam) and a tactical HUD overlay directly onto your cockpit MFD Target display.
 
