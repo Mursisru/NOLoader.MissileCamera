@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.27.1] - 2026-06-30
+
+### Changed
+- Documentation refresh: Developer header, badges, GitHub Alerts, Keywords, gitignore hygiene.
+
+
 All notable changes to **NOLoader.MissileCamera** are documented here. Semver in `mod.json` / `MissileCameraMod.cs`.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).

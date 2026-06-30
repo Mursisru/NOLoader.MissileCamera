@@ -4,3 +4,10 @@ obj/
 .debug/
 *.user
 Directory.Build.props
+libs/
+Directory.Build.user.props
+.cursorrules
+.cursor/
+ffmpeg.exe
+local_build_scripts/
+_buildroot/
