@@ -15,8 +15,32 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 
 ---
 
+## Critical warnings
+
+> [!IMPORTANT]
+> **NOLoader required** - install [NOLoader](https://github.com/Mursisru/NOLoader/releases) before this mod.
+
+> [!IMPORTANT]
+> **Close Nuclear Option before PatchTool** - PatchTool edits `Managed\Assembly-CSharp.dll`; a running game causes Win32 IO error 1224.
+
+> [!IMPORTANT]
+> **Run PatchTool once** after install or game update so Cecil IL patches from `mod.json` apply.
+
+> [!WARNING]
+> **Do not install both loaders** - remove BepInEx MissileCamera if using this NOLoader port (`winhttp.dll` conflict).
+
+> [!WARNING]
+> **Gate L2 hash mismatch after game updates** - re-bake all `expectedSignatureHash` values in `mod.json` when `Assembly-CSharp.dll` changes.
+
+> [!WARNING]
+> **Third-party aircraft / MFD mods may break layout** - set `[Layout] DisplayMode=skip` in `mod_config.ini` if needed.
+
+> [!NOTE]
+> **`loadStage: Mission`** - mod boots in mission scenes only (parity with BepInEx mission host).
+
 ## Table of contents
 
+- [Critical warnings](#critical-warnings)
 * [Features](#features)
 * [Choose your loader](#choose-your-loader)
 * [Requirements](#requirements)
@@ -30,8 +54,6 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 * [Troubleshooting](#troubleshooting)
 * [Changelog](#changelog)
 * [Licence](#licence)
-
----
 
 ## Features
 
