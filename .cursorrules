@@ -1,0 +1,162 @@
+# СТАТИЧЕСКИЕ ПРАВИЛА
+
+## Проект
+- **Игра:** Nuclear Option (NO), Unity, Steam
+- **Стек:** C# / .NET 4.8, **NOLoader** (`INOMod` + Cecil IL patches via `mod.json`)
+- **Sibling dep:** `../NOLoader_Engine` (обязателен для build + PatchTool)
+- **Game API (только дамп):** `C:\Users\at747\Desktop\CH\_Nuclear_Option_`
+- **Upstream BepInEx (паритет логики):** `source\repos\MissileCamera\` branch `BepInExVersion` — **не** ставить оба loader в игру
+- **Legacy (не использовать):** `NOLoader.MissileCamOnMfd\`
+
+## Стиль кода
+- Guard clauses; каждый patch в `mod.json` с `expectedSignatureHash`
+- Паритет NOLoader ↔ BepInEx: логика в `Camera/`, `Hud/`, `Layout/`; Harmony → `src/Patches/Patches.cs`
+- Commit/push — только по явной просьбе
+
+## Deploy (ассистент)
+1. **Игра закрыта** → `.\scripts\deploy.ps1 -PatchToolConfiguration RDYTU`
+2. Deploy — часть завершения задачи после build, не ждать просьбы
+- **Имя:** NOLoader.MissileCamera
+- **mod id:** `com.at747.missilecamera`
+- **Версия:** 0.27.1 (semver в `mod.json` + `MissileCameraMod.cs`)
+- **Deploy path:** `Nuclear Option\NOLoader\mods\MissileCamera\`
+
+---
+
+## NOLoader mod — как работать с этим репо
+
+### Зависимости сборки
+
+```text
+source/repos/
+  NOLoader_Engine/          ← ProjectReference NOLoader.API + PatchTool
+  NOLoader.MissileCamera/   ← этот репо
+```
+
+```xml
+<ProjectReference Include="..\NOLoader_Engine\src\NOLoader.API\NOLoader.API.csproj" />
+<ProjectReference Include="..\NOLoader_Engine\DEV.SDK\shared\NOLoader.ModConfig\NOLoader.ModConfig.dll" />
+```
+
+`Directory.Build.props` → `NuclearOptionRoot` (путь к игре). Копировать из `Directory.Build.props.example`.
+
+### Структура mod folder в игре
+
+```text
+NOLoader/mods/MissileCamera/
+  NOLoader.MissileCamera.dll
+  NOLoader.ModConfig.dll      ← shared INI helper
+  mod.json
+  mod_config.ini
+```
+
+### `mod.json` — контракт loader
+
+| Поле | Значение этого мода |
+|---|---|
+| `id` | `com.at747.missilecamera` |
+| `entryType` | `NOLoader.MissileCamera.MissileCameraMod` |
+| `loadStage` | **`Mission`** — bootstrap только в миссии (parity BepInEx mission host) |
+| `patches[]` | 7× Postfix на MFD/Target UI (`TargetScreenUI`, `TargetCam`, `TacScreen`, `WeaponManager`) |
+
+**Gate L2:** при изменении game `Assembly-CSharp.dll` — пересчитать **все** `expectedSignatureHash` в `mod.json`. PatchTool отклонит patch при mismatch.
+
+Patch inject targets: `src/Patches/Patches.cs` — static postfix methods, **не** Harmony attributes.
+
+### Entry point
+
+`src/Mod/MissileCameraMod.cs` implements `INOMod`:
+- `OnLoad` → `ModIniConfig.EnsureDefault`, refresh configs, `MissileCameraFeedDriverHost.Ensure()`, Cecil patches уже applied loader'ом
+- `OnUnload` → shutdown feed driver
+- `loadStage: Mission` → `OnLoad` вызывается при загрузке mission scene, не в main menu
+
+### IL patches vs runtime logic
+
+| Слой | Файлы | Роль |
+|---|---|---|
+| Cecil inject | `mod.json` + `Patches.cs` | Hook game MFD events (setup camera, tac screen, weapon list) |
+| Runtime | `FeedController`, `MfdLayoutController`, … | Missile feed, HUD, layout после hook |
+
+Порт с BepInEx: тело Harmony postfix → static method в `Patches.cs`; target/hash в `mod.json`.
+
+### Config
+
+- **`mod_config.ini`** рядом с DLL (секции `[Layout]`, `[MissileCameraFeed]`, `[MissileCameraHud]`, `[MissileCameraControls]`)
+- Парсинг: `NOLoader.ModConfig` + `MissileCamera*Config.cs` с hot-reload poll (~0.5 s)
+- BepInEx upstream использует Configuration Manager — **не** копировать `mod_config.ini` в BepInEx pack
+
+### Build & deploy
+
+```powershell
+# DEV_SDK (default) — mod author channel
+dotnet build NOLoader.MissileCamera.csproj -c DEV_SDK
+
+# Deploy: build + copy DLLs + mod.json + ini + PatchTool
+.\scripts\deploy.ps1 -PatchToolConfiguration RDYTU
+```
+
+`deploy.ps1`:
+1. Build mod + `NOLoader.ModConfig`
+2. Copy → `NOLoader/mods/MissileCamera/`
+3. `dotnet run NOLoader.PatchTool` — **игра должна быть закрыта**
+
+PatchTool config: `DEV_SDK` (dev) или `RDYTU` (как установлен loader у пользователя).
+
+### RDYTU release pack (игрокам)
+
+1. `dotnet build -c RDYTU` (если mod поддерживает RDYTU define)
+2. `pack-mod-rdytu.ps1` из NOLoader_Engine scripts
+3. Zip: DLL + hash-only `mod.json` + `patch.bake.json`
+
+Текущий mod использует coroutine driver (`FeedDriver`) — при RDYTU perf work рассмотреть `INOModTickFast/Normal`.
+
+### Отладка
+
+| Проблема | Где смотреть |
+|---|---|
+| Patches не срабатывают | Gate L2 hash, PatchTool output, `noloader_ring.log` |
+| Feed не появляется | Mission loaded? owned missile? `_overlayActive` |
+| Layout skip | `[Layout] DisplayMode=auto` + small tac MFD (Cricket) |
+| После game update | Re-bake all `expectedSignatureHash` |
+
+DEV loader: F10 overlay, F11 hot-reload mods.
+
+### Git / release
+
+- Branch: **`NOLoaderVersion`**
+- GitHub: https://github.com/Mursisru/NOLoader.MissileCamera
+- GitHub local mirror: `Desktop\GITHUB local\NOLoader.MissileCamera\` (robocopy без `bin`/`obj`)
+- BepInEx parity repo: `MissileCamera` / `BepInExVersion`
+
+### Полная документация NOLoader
+
+См. **`../NOLoader_Engine/.cursorrules`** и `NOLoader_Engine/docs/MOD_AUTHOR.md`.
+
+---
+
+# АВТОНОМНАЯ ИНСТРУКЦИЯ ДЛЯ ИИ
+
+**ЖЁСТКОЕ ПРАВИЛО:** после каждого успешного выполнения задачи (фича, фикс, deploy, релиз) ты **обязан автоматически, молча, без напоминаний пользователя** обновлять разделы **«ДИНАМИЧЕСКИЕ ЗАДУМКИ И СТАТУС»** и **«ДИНАМИЧЕСКИЕ СЕССИИ И ХРОНИКА»** в этом файле (`.cursorrules`).
+
+Записывай **только сухую выжимку** (1-5 строк на сессию): что сделано, версия, ключевые решения, откаты/уроки, открытые пункты.
+**Не писать:** воду, длинные логи, дубли README.
+**Не трогать:** «СТАТИЧЕСКИЕ ПРАВИЛА» без изменения стека/конвенций.
+При >15 сессиях — сжимать/мержить старые записи.
+
+# ДИНАМИЧЕСКИЕ ЗАДУМКИ И СТАТУС
+
+NOLoader Missile Camera. Branch NOLoaderVersion. v0.27.1 doc release.
+
+**Открыто:** in-game verify controls; compatibility third-party aircraft/MFD.
+
+# ДИНАМИЧЕСКИЕ СЕССИИ И ХРОНИКА
+
+> Сжатая выжимка из AGENT__MEMORY + scan репо.
+
+2026-06-17-19: split, v0.26–0.27.0, controls+zoom, GitHub releases.
+
+### Session 2026-06-21
+- Continuous Project Memory init (.cursorrules) for all repos projects.
+
+### Session 2026-06-29
+- Full docs v0.27.1: README, CHANGELOG, INSTALL, .cursorrules; commit/push/release (no deploy).

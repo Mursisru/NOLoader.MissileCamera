@@ -1,0 +1,39 @@
+NOLoader.MissileCamera v0.27.1 — NOLoader mod for Nuclear Option
+
+Requires NOLoader: https://github.com/Mursisru/NOLoader
+Full docs: https://github.com/Mursisru/NOLoader.MissileCamera/blob/NOLoaderVersion/README.md
+
+Install:
+1. Install NOLoader into Nuclear Option (NOLoader\core\, winhttp.dll proxy).
+   See https://github.com/Mursisru/NOLoader/blob/master/docs/INSTALL.md
+2. Extract into: Nuclear Option\NOLoader\mods\MissileCamera\
+   - NOLoader.MissileCamera.dll
+   - NOLoader.ModConfig.dll
+   - mod.json
+   - mod_config.ini
+3. Run PatchTool once (or use deploy script) so Cecil patches apply.
+   Close the game before PatchTool.
+
+Mod id: com.at747.missilecamera
+BepInEx alternative: https://github.com/Mursisru/MissileCamera (branch BepInExVersion)
+Do NOT install both NOLoader and BepInEx in the same game folder.
+
+Keybinds (US English keyboard, fixed — not in mod_config.ini):
+  Right Alt + /     Next missile (wraps at end of salvo)
+  Right Alt + ,     Previous missile (wraps)
+  Right Alt + ;     Zoom in
+  Right Alt + .     Zoom out
+  Right Shift + .   Reset zoom to 0.0
+
+Active only while MFD missile feed overlay is on and owned missiles are in flight.
+
+Changes in v0.27.1:
+- Documentation-only release (README, CHANGELOG, INSTALL). Same gameplay as v0.27.0.
+
+Changes in v0.27.0:
+- Manual missile cycling (sticky follow, cyclic wrap) and session zoom with HUD offset readout.
+- [MissileCameraControls] section in mod_config.ini (zoom step/limits; keys fixed in code).
+
+Compatibility:
+- Tested on vanilla NO aircraft and stock Target MFD.
+- Third-party aircraft or MFD mods may conflict — see README Compatibility section.

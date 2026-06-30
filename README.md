@@ -2,13 +2,31 @@
 
 [![Nuclear Option](https://img.shields.io/badge/Game-Nuclear%20Option-blue)](https://store.steampowered.com/app/2168680/Nuclear_Option/)
 [![NOLoader](https://img.shields.io/badge/Loader-NOLoader-purple)](https://github.com/Mursisru/NOLoader)
-[![Version](https://img.shields.io/badge/Version-0.27.0-green)]()
+[![Version](https://img.shields.io/badge/Version-0.27.1-green)]()
 
 NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye view (Missile Nose Cam) and a tactical HUD overlay directly onto your cockpit MFD Target display.
 
 **Mod id:** `com.at747.missilecamera`
 
-**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay; NOLoader uses `mod_config.ini`, BepInEx uses **Configuration Manager**. Cecil IL patches instead of Harmony. Use **one** loader — do not install both builds.
+**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay; NOLoader uses `mod_config.ini`, BepInEx uses **Configuration Manager**. Use **one** loader — do not install both builds.
+
+---
+
+## Table of contents
+
+* [Features](#features)
+* [Choose your loader](#choose-your-loader)
+* [Requirements](#requirements)
+* [Player installation](#player-installation)
+* [Controls & keybinds](#controls--keybinds)
+* [Configuration (`mod_config.ini`)](#configuration-mod_configini)
+* [Runtime lifecycle](#runtime-lifecycle)
+* [Developer guide](#developer-guide)
+* [Project layout](#project-layout)
+* [Compatibility & limitations](#compatibility--limitations)
+* [Troubleshooting](#troubleshooting)
+* [Changelog](#changelog)
+* [Licence](#licence)
 
 ---
 
@@ -22,6 +40,20 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
   * **Dedicated split** (e.g. KR-67): wide target cam on the left, missile panel on the right.
   * **Small tac overlay** (e.g. Cricket): mod **skipped** — vanilla tactical MFD unchanged.
 * **Mission-only bootstrap:** Mod loads at **Mission** stage (`loadStage: Mission` in `mod.json`), matching the BepInEx mission-scene bootstrap.
+
+---
+
+## Choose your loader
+
+| | **This repo (NOLoader)** | [MissileCamera BepInEx](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) |
+|---|---|---|
+| Loader | [NOLoader](https://github.com/Mursisru/NOLoader) (`winhttp.dll` proxy) | BepInEx 5 + Harmony |
+| Config | `mod_config.ini` in mod folder | BepInEx Configuration Manager (`.cfg`) |
+| Patches | Cecil IL via `mod.json` + PatchTool | Harmony runtime |
+| Install path | `NOLoader\mods\MissileCamera\` | `BepInEx\plugins\MissileCamera\` |
+| Game update | Re-run PatchTool; verify `expectedSignatureHash` | Clear Harmony cache if needed |
+
+**Do not install both loaders** in the same game directory (`winhttp.dll` conflict).
 
 ---
 
@@ -50,57 +82,7 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 
 3. Run PatchTool once (or use the deploy script) so Cecil patches apply to `Assembly-CSharp.dll`.
 
-> **Troubleshooting:** Close the game before PatchTool. Re-run PatchTool after game updates or mod DLL changes if hooks stop firing.
-
----
-
-## Developer guide
-
-Close the game before deploy (PatchTool needs managed DLLs unlocked).
-
-### Quick deploy
-
-```powershell
-# DEV_SDK build + PatchTool (default)
-.\scripts\deploy.ps1
-
-# RDYTU loader in game — build DEV_SDK, patch with RDYTU:
-.\scripts\deploy.ps1 -PatchToolConfiguration RDYTU
-```
-
-### Build
-
-Requires `NOLoader_Engine` at `source\repos\NOLoader_Engine\` (sibling of this repo).
-
-Set the game path in `Directory.Build.props` (`NuclearOptionRoot`) if needed. Copy `Directory.Build.props.example` to `Directory.Build.props` and adjust the path.
-
-```powershell
-dotnet build NOLoader.MissileCamera.csproj -c DEV_SDK
-```
-
-Output: `bin\DEV_SDK\net48\NOLoader.MissileCamera.dll`
-
-Open `NOLoader.MissileCamera.sln` in Visual Studio or JetBrains Rider for IDE builds.
-
-### IL patches (`mod.json`)
-
-Seven Cecil postfix injections (hashes must match game build):
-
-* `TargetScreenUI::SetupCamera`
-* `TargetCam::SetLandingCam` / `CancelTarget` / `OnDestroy`
-* `TacScreen::Initialize` / `TacScreen_OnCamToggle`
-* `WeaponManager::TargetListChanged`
-
-Re-run PatchTool after game updates or mod DLL changes.
-
-### Porting from BepInEx
-
-When updating from the BepInEx `MissileCamera` repo (`source\repos\MissileCamera\`):
-
-1. Copy changed logic under `src/Camera/`, `src/Hud/`, `src/Layout/`, `src/Access/`, `src/Ui/`.
-2. Map Harmony postfix bodies to `src/Patches/Patches.cs` (same call order).
-3. Keep `mod_config.ini` keys identical.
-4. Rebuild, redeploy, and verify patch hashes if `Assembly-CSharp.dll` changed.
+4. Download release zip from [GitHub Releases](https://github.com/Mursisru/NOLoader.MissileCamera/releases) or use `release/v0.27.1/INSTALL.txt` as a checklist.
 
 ---
 
@@ -124,7 +106,7 @@ Active only while the missile feed overlay is on and you have **player-owned** i
 
 ## Configuration (`mod_config.ini`)
 
-Edit `NOLoader\mods\MissileCamera\mod_config.ini` (same format as the BepInEx `MissileCamera` plugin).
+Edit `NOLoader\mods\MissileCamera\mod_config.ini`. Changes are polled every ~0.5 s during a mission (hot-reload without restart).
 
 ### `[Layout]`
 
@@ -200,6 +182,58 @@ Edit `NOLoader\mods\MissileCamera\mod_config.ini` (same format as the BepInEx `M
 
 ---
 
+## Developer guide
+
+Close the game before deploy (PatchTool needs managed DLLs unlocked).
+
+**AI / mod authors:** see `.cursorrules` in this repo and `NOLoader_Engine/.cursorrules` for full NOLoader architecture (DEV_SDK, PatchTool, Gate L2, `INOMod`).
+
+### Quick deploy
+
+```powershell
+# DEV_SDK build + PatchTool (default)
+.\scripts\deploy.ps1
+
+# RDYTU loader in game — build DEV_SDK, patch with RDYTU:
+.\scripts\deploy.ps1 -PatchToolConfiguration RDYTU
+```
+
+### Build
+
+Requires `NOLoader_Engine` at `source\repos\NOLoader_Engine\` (sibling of this repo).
+
+Set the game path in `Directory.Build.props` (`NuclearOptionRoot`) if needed. Copy `Directory.Build.props.example` to `Directory.Build.props` and adjust the path.
+
+```powershell
+dotnet build NOLoader.MissileCamera.csproj -c DEV_SDK
+```
+
+Output: `bin\DEV_SDK\net48\NOLoader.MissileCamera.dll`
+
+Open `NOLoader.MissileCamera.sln` in Visual Studio or JetBrains Rider for IDE builds.
+
+### IL patches (`mod.json`)
+
+Seven Cecil postfix injections (hashes must match game build):
+
+* `TargetScreenUI::SetupCamera`
+* `TargetCam::SetLandingCam` / `CancelTarget` / `OnDestroy`
+* `TacScreen::Initialize` / `TacScreen_OnCamToggle`
+* `WeaponManager::TargetListChanged`
+
+Re-run PatchTool after game updates or mod DLL changes. Gate L2 rejects patches when `expectedSignatureHash` mismatches.
+
+### Porting from BepInEx
+
+When updating from the BepInEx `MissileCamera` repo (`source\repos\MissileCamera\`):
+
+1. Copy changed logic under `src/Camera/`, `src/Hud/`, `src/Layout/`, `src/Access/`, `src/Ui/`.
+2. Map Harmony postfix bodies to `src/Patches/Patches.cs` (same call order).
+3. Keep `mod_config.ini` keys identical to BepInEx Configuration Manager defaults.
+4. Rebuild, redeploy, and verify patch hashes if `Assembly-CSharp.dll` changed.
+
+---
+
 ## Project layout
 
 ```text
@@ -208,6 +242,7 @@ NOLoader.MissileCamera/
 ├── NOLoader.MissileCamera.sln
 ├── mod.json
 ├── mod_config.ini
+├── CHANGELOG.md
 ├── src/
 │   ├── Mod/
 │   │   └── MissileCameraMod.cs   # INOMod entry
@@ -219,6 +254,9 @@ NOLoader.MissileCamera/
 │   ├── Access/                   # Game API wrappers
 │   ├── Ui/                       # HUD graphics helpers
 │   └── Logging/
+├── release/
+│   └── v0.27.1/
+│       └── INSTALL.txt
 └── scripts/
     └── deploy.ps1
 ```
@@ -235,6 +273,28 @@ Developed and tested against **vanilla Nuclear Option** aircraft and the stock T
 * **Other mods that change the MFD** — tactical UI overlays, layout replacers, or patches to `TargetScreenUI`, `TacScreen`, `TargetCam`, or target/weapon lists may **conflict** with this mod's Cecil IL hooks and UI zone split.
 
 **Mitigation:** set `[Layout] DisplayMode=skip` in `mod_config.ini` to keep vanilla MFD layout (feed may still bind if hooks remain compatible), or disable conflicting MFD mods. For modded setups, include aircraft/mod names and repro steps in issue reports.
+
+---
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| :--- | :--- | :--- |
+| Mod not loading | NOLoader not installed / wrong folder | Verify `NOLoader\mods\MissileCamera\` contents and `mod.json` |
+| Hooks never fire | PatchTool not run or game was open | Close game; run PatchTool or `deploy.ps1` |
+| Gate L2 / hash fail after game update | `expectedSignatureHash` stale | Re-bake hashes; update `mod.json`; redeploy |
+| No feed on MFD | No owned in-flight missile / overlay off | Launch missile with Target MFD active |
+| Layout wrong on modded aircraft | Custom MFD hierarchy | `DisplayMode=skip` or report with aircraft name |
+| Keybinds ignored | Wrong keyboard layout / overlay inactive | US layout; feed must be active |
+| BepInEx + NOLoader conflict | Both loaders installed | Remove one loader installation |
+
+**Logs:** `NOLoader\logs\noloader_ring.log` (DEV loader: F10 overlay).
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
