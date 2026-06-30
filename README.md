@@ -7,15 +7,12 @@
 [![Version](https://img.shields.io/badge/Version-0.27.1-green)](https://github.com/Mursisru/NOLoader.MissileCamera/releases/tag/v0.27.1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](https://github.com/Mursisru/NOLoader.MissileCamera/blob/NOLoaderVersion/LICENSE)
 
-NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye view (Missile Nose Cam) and a tactical HUD overlay directly onto your cockpit MFD Target display.
-
-**Mod id:** `com.at747.missilecamera`
-
-**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay; NOLoader uses `mod_config.ini`, BepInEx uses **Configuration Manager**. Use **one** loader — do not install both builds.
-
 ---
 
 ## Critical warnings
+
+> [!CAUTION]
+> **Never install NOLoader and BepInEx in the same game folder** - remove BepInEx `winhttp.dll` before deploying this mod.
 
 > [!IMPORTANT]
 > **NOLoader required** - install [NOLoader](https://github.com/Mursisru/NOLoader/releases) before this mod.
@@ -27,9 +24,6 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 > **Run PatchTool once** after install or game update so Cecil IL patches from `mod.json` apply.
 
 > [!WARNING]
-> **Do not install both loaders** - remove BepInEx MissileCamera if using this NOLoader port (`winhttp.dll` conflict).
-
-> [!WARNING]
 > **Gate L2 hash mismatch after game updates** - re-bake all `expectedSignatureHash` values in `mod.json` when `Assembly-CSharp.dll` changes.
 
 > [!WARNING]
@@ -37,6 +31,14 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 
 > [!NOTE]
 > **`loadStage: Mission`** - mod boots in mission scenes only (parity with BepInEx mission host).
+
+NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye view (Missile Nose Cam) and a tactical HUD overlay directly onto your cockpit MFD Target display.
+
+**Mod id:** `com.at747.missilecamera`
+
+**Origin:** NOLoader port of the BepInEx [MissileCamera](https://github.com/Mursisru/MissileCamera/tree/BepInExVersion) plugin. Same gameplay; NOLoader uses `mod_config.ini`, BepInEx uses **Configuration Manager**. Use **one** loader — do not install both builds.
+
+---
 
 ## Table of contents
 
