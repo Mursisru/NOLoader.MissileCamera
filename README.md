@@ -1,6 +1,6 @@
 **Developer:** Mursisru
 
-# NOLoader.MissileCamera (Nuclear Option Mod)
+# NOLoader.MissileCamera (Nuclear Option Mod Loader)
 
 [![Nuclear Option](https://img.shields.io/badge/Game-Nuclear%20Option-blue)](https://store.steampowered.com/app/2168680/Nuclear_Option/)
 [![NOLoader](https://img.shields.io/badge/Loader-NOLoader-purple)](https://github.com/Mursisru/NOLoader)
@@ -87,9 +87,6 @@ NOLoader mod for the flight sim **Nuclear Option** that adds a live seeker-eye v
 ---
 
 ## Player installation
-
-> [!IMPORTANT]
-> **NOLoader required** - install [NOLoader](https://github.com/Mursisru/NOLoader/releases) before this mod.
 
 1. Install [NOLoader](https://github.com/Mursisru/NOLoader) into the game (`NOLoader\core\`, `winhttp.dll` proxy). See [INSTALL.md](https://github.com/Mursisru/NOLoader/blob/master/docs/INSTALL.md) · [RDYTU](https://github.com/Mursisru/NOLoader/blob/master/docs/RDYTU.md) · [RDYTU.mini](https://github.com/Mursisru/NOLoader/blob/master/docs/RDYTU.mini.md).
 2. Copy into:
@@ -328,9 +325,3 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## Licence
 
 MIT License — see [LICENSE](LICENSE).
-
----
-
-## Keywords
-
-nuclear-option, noloader, mod, noloader.missilecamera, csharp, unity
