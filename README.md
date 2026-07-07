@@ -1,6 +1,6 @@
 **Developer:** Mursisru
 
-# NOLoader.MissileCamera (Nuclear Option Mod Loader)
+# NOLoader.MissileCamera (Nuclear Option Mod)
 
 [![Nuclear Option](https://img.shields.io/badge/Game-Nuclear%20Option-blue)](https://store.steampowered.com/app/2168680/Nuclear_Option/)
 [![NOLoader](https://img.shields.io/badge/Loader-NOLoader-purple)](https://github.com/Mursisru/NOLoader)
